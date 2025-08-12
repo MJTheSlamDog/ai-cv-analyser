@@ -17,15 +17,19 @@ export function meta({}: Route.MetaArgs) {
 export default function Home() {
 
     const { auth } = usePuterStore();
+    
     const navigate = useNavigate();
     const location = useLocation();
 
     useEffect(() => {
-        if(!auth.isAuthenticated && location.pathname !== '/auth') navigate('/auth?next=/');
-    }, [auth.isAuthenticated, location.pathname]);
+      // Check if user is unauthenticated and currently on the root path
+      if (!auth.isAuthenticated && location.pathname === '/') {
+        navigate('/auth?next=/');
+      }
+    }, [auth.isAuthenticated, location.pathname, navigate]);
 
   return (
-    <main className="bg-[url('/images/bg-main.svg')] bg-cover min-h-screen flex items-center justify-center">
+    <main className="bg-[url('/images/bg-main.svg')] bg-cover">
       <Navbar />
 
       <section className="main-section">
