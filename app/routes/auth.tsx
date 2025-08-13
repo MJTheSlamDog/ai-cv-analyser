@@ -10,17 +10,13 @@ export const meta = () => ([
 const auth = () => {
     const { isLoading, auth } = usePuterStore();
     const location = useLocation();
+    const next = location.search.split('next=')[1];
     const navigate = useNavigate();
-
-    // Use URLSearchParams to safely get the 'next' parameter with a default value.
-    const next = new URLSearchParams(location.search).get('next') || '/';
 
     useEffect(() => {
         // Only navigate if the user is authenticated and the next path exists.
-        if (auth.isAuthenticated) {
-            navigate(next, { replace: true });
-        }
-    }, [auth.isAuthenticated, next, navigate]);
+            if (auth.isAuthenticated) navigate(next);
+        }, [auth.isAuthenticated, next]);
 
     return (
         <main className="bg-[url('/images/bg-main.svg')] bg-cover min-h-screen flex items-center justify-center">

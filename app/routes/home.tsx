@@ -23,10 +23,8 @@ export default function Home() {
 
     useEffect(() => {
       // Check if user is unauthenticated and currently on the root path
-      if (!auth.isAuthenticated && location.pathname === '/') {
-        navigate('/auth?next=/');
-      }
-    }, [auth.isAuthenticated, location.pathname, navigate]);
+      if (!auth.isAuthenticated)navigate('/auth?next=/');
+    }, [auth.isAuthenticated]);
 
   return (
     <main className="bg-[url('/images/bg-main.svg')] bg-cover">
