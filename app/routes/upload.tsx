@@ -3,12 +3,11 @@ import React, { type FormEvent } from 'react'
 import { useNavigate } from 'react-router';
 import FileUploader from '~/components/FileUploader';
 import Navbar from '~/components/Navbar'
-import { convertPdfToImage } from '~/lib/pdf2img';
+import { convertPdfToImages } from '~/lib/pdf2img'; // 👈 updated import
 import { usePuterStore } from '~/lib/puter';
 import { generateUUID } from '~/lib/utils';
 
 const upload = () => {
-
     const { auth, isLoading, fs, ai, kv } = usePuterStore();
     const navigate = useNavigate();
     const [isProcessing, setIsProcessing] = React.useState(false);
@@ -20,29 +19,43 @@ const upload = () => {
         setFile(file);
     }
 
-    const handleAnalyze = async ({companyName, jobTitle, jobDescription, file}: {companyName: string, jobTitle: string, jobDescription: string, file: File}) => {
+    const handleAnalyze = async ({
+        companyName, jobTitle, jobDescription, file
+    }: { companyName: string, jobTitle: string, jobDescription: string, file: File }) => {
         setIsProcessing(true);
         setStatusText("Uploading the file...");
 
         const uploadedFile = await fs.upload([file]);
-        if(!uploadedFile) return setStatusText("Failed to upload the file. Please try again.");
+        if (!uploadedFile) return setStatusText("Failed to upload the file. Please try again.");
 
-        setStatusText("Converting to image...");
-        const image = await convertPdfToImage(file);
-        if(!image.file) return setStatusText("Failed to convert the file to an image");
+        setStatusText("Converting to images...");
+        const images = await convertPdfToImages(file);
+        if (!images.length || !images[0].file) return setStatusText("Failed to convert the file to images");
 
-        setStatusText("Uploading the image...");
-        const uploadingImage = await fs.upload([image.file]);
-        if(!uploadingImage) return setStatusText("Failed to upload the image.");
+        setStatusText("Uploading images...");
+        const uploadedImages: string[] = [];
 
-        setStatusText("preparing Data...");
+        for (const img of images) {
+            if (img.file) {
+                const uploadedImage = await fs.upload([img.file]);
+                if (uploadedImage) {
+                    uploadedImages.push(uploadedImage.path);
+                }
+            }
+        }
+
+        if (uploadedImages.length === 0) {
+            return setStatusText("Failed to upload any images.");
+        }
+
+        setStatusText("Preparing data...");
 
         const uuid = generateUUID();
 
         const data = {
             id: uuid,
             resumePath: uploadedFile.path,
-            imagePath: uploadingImage.path,
+            imagePaths: uploadedImages, // 👈 store all images
             companyName,
             jobTitle,
             jobDescription,
@@ -58,10 +71,11 @@ const upload = () => {
             prepareInstructions({ jobTitle, jobDescription })
         );
 
-        if(!feedback) return setStatusText("Failed to analyze the resume.");
+        if (!feedback) return setStatusText("Failed to analyze the resume.");
 
-        const feedbackText = typeof feedback.message.content === "string" ? feedback.message.content : 
-            feedback.message.content[0].text;
+        const feedbackText = typeof feedback.message.content === "string"
+            ? feedback.message.content
+            : feedback.message.content[0].text;
 
         data.feedback = JSON.parse(feedbackText);
         await kv.set(`resume:${uuid}`, JSON.stringify(data));
@@ -73,18 +87,16 @@ const upload = () => {
     const handleSubmit = (e: FormEvent<HTMLFormElement>) => {
         e.preventDefault();
         const form = e.currentTarget.closest('form');
-        if(!form) return;
+        if (!form) return;
         const formData = new FormData(form);
 
         const companyName = formData.get('company-name') as string;
         const jobTitle = formData.get('job-title') as string;
         const jobDescription = formData.get('job-description') as string;
 
-        if(!file) return;
+        if (!file) return;
 
-        handleAnalyze({companyName, jobTitle, jobDescription, file});
-
-
+        handleAnalyze({ companyName, jobTitle, jobDescription, file });
     }
 
     return (
@@ -130,4 +142,4 @@ const upload = () => {
     )
 }
 
-export default upload
+export default upload;
