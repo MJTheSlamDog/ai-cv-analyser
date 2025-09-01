@@ -19,7 +19,7 @@ export default function Home() {
     const { auth } = usePuterStore();
     
     const navigate = useNavigate();
-    const location = useLocation();
+    // const location = useLocation();
 
     useEffect(() => {
       // Check if user is unauthenticated and currently on the root path
