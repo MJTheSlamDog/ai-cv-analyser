@@ -3,7 +3,7 @@ import React, { type FormEvent } from 'react'
 import { useNavigate } from 'react-router';
 import FileUploader from '~/components/FileUploader';
 import Navbar from '~/components/Navbar'
-import { convertPdfToImages } from '~/lib/pdf2img'; // 👈 updated import
+import { convertPdfToImages } from '~/lib/pdf2img';
 import { usePuterStore } from '~/lib/puter';
 import { generateUUID } from '~/lib/utils';
 
@@ -60,7 +60,7 @@ const upload = () => {
             jobTitle,
             jobDescription,
             feedback: "",
-        }
+        };
 
         await kv.set(`resume:${uuid}`, JSON.stringify(data));
 

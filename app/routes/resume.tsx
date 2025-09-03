@@ -17,6 +17,11 @@ const Resume = () => {
     const navigate = useNavigate();
 
     useEffect(() => {
+      // Check if user is unauthenticated and currently on the root path
+        if (!isLoading && !auth.isAuthenticated)navigate(`/auth?next=/resume/${id}`);
+    }, [isLoading]);
+
+    useEffect(() => {
         const loadResume = async () => {
         const resume = await kv.get(`resume:${id}`);
         if (!resume) return;
@@ -79,6 +84,18 @@ const Resume = () => {
                 </a>
                 </div>
             )}
+            </section>
+
+            <section className="feedback-section">
+                <h2 className="text-4xl !text-black font-bold">Resume Review</h2>
+
+                {feedback ? (
+                    <div className="flex flex-col gap-6 animate-in fade-in duration-1000 mt-6">
+                        Summary ATS Details
+                    </div>
+                ): (
+                    <img src="/images/resume-scan-2.gif" className="w-full" />
+                )}
             </section>
         </div>
         </main>
