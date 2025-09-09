@@ -1,3 +1,12 @@
+import { clsx } from "clsx";
+import { twMerge } from "tailwind-merge";
+
+// Classname utility for merging Tailwind classes
+
+export function cn(...inputs: (string | undefined | null | false)[]) {
+    return twMerge(clsx(inputs));
+}
+
 export function formatBytes(bytes: number): string {
     if (bytes < 1024) return `${bytes} B`;
     const kb = bytes / 1024;
