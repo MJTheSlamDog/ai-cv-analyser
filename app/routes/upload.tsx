@@ -6,8 +6,9 @@ import Navbar from '~/components/Navbar'
 import { convertPdfToImages } from '~/lib/pdf2img';
 import { usePuterStore } from '~/lib/puter';
 import { generateUUID } from '~/lib/utils';
+import CyberpunkBg from '~/components/Cyberpunkbg'; // ⬅️ Import background
 
-const upload = () => {
+const Upload = () => {
     const { auth, isLoading, fs, ai, kv } = usePuterStore();
     const navigate = useNavigate();
     const [isProcessing, setIsProcessing] = React.useState(false);
@@ -55,7 +56,7 @@ const upload = () => {
         const data = {
             id: uuid,
             resumePath: uploadedFile.path,
-            imagePaths: uploadedImages, //
+            imagePaths: uploadedImages,
             companyName,
             jobTitle,
             jobDescription,
@@ -102,46 +103,50 @@ const upload = () => {
     }
 
     return (
-        <main className="bg-[url('/images/bg-main.svg')] bg-cover">
-            <Navbar />
-            <section className="main-section">
-                <div className="page-heading py-16">
-                    <h1>Smart Feedback For Your Dream Job</h1>
-                    {isProcessing ? (
-                        <>
-                            <h2>{statusText}</h2>
-                            <img src="/images/resume-scan.gif" className="w-full" />
-                        </>
-                    ) : (
-                        <h2>Drop Your Resume For an ATS Score And Improvement Tips</h2>
-                    )}
-                    {!isProcessing && (
-                        <form id="upload-form" onSubmit={handleSubmit} className="flex flex-col gap-4 mt-8">
-                            <div className="form-div">
-                                <label htmlFor="company-name">Company Name</label>
-                                <input type="text" name="company-name" placeholder="Enter company name" id="company-name" />
-                            </div>
-                            <div className="form-div">
-                                <label htmlFor="job-title">Job Title</label>
-                                <input type="text" name="job-title" placeholder="Enter job title" id="job-title" />
-                            </div>
-                            <div className="form-div">
-                                <label htmlFor="job-description">Job Description</label>
-                                <textarea rows={5} name="job-description" placeholder="Enter job description" id="job-description" />
-                            </div>
-                            <div className="form-div">
-                                <label htmlFor="uploader">Upload Resume</label>
-                                <FileUploader onFileSelect={handleFileSelect} />
-                            </div>
-                            <button className="primary-button" type='submit'>
-                                Analyze Resume
-                            </button>
-                        </form>
-                    )}
-                </div>
-            </section>
+        <main className="relative min-h-screen overflow-hidden">
+            <CyberpunkBg className="absolute inset-0 w-full h-full" />
+
+            <div className="relative z-10">
+                <Navbar />
+                <section className="main-section">
+                    <div className="page-heading py-16">
+                        <h1>Smart Feedback For Your Dream Job</h1>
+                        {isProcessing ? (
+                            <>
+                                <h2>{statusText}</h2>
+                                <img src="/images/resume-scan.gif" className="w-full" />
+                            </>
+                        ) : (
+                            <h2>Drop Your Resume For an ATS Score And Improvement Tips</h2>
+                        )}
+                        {!isProcessing && (
+                            <form id="upload-form" onSubmit={handleSubmit} className="flex flex-col gap-4 mt-8">
+                                <div className="form-div">
+                                    <label htmlFor="company-name">Company Name</label>
+                                    <input type="text" name="company-name" placeholder="Enter company name" id="company-name" />
+                                </div>
+                                <div className="form-div">
+                                    <label htmlFor="job-title">Job Title</label>
+                                    <input type="text" name="job-title" placeholder="Enter job title" id="job-title" />
+                                </div>
+                                <div className="form-div">
+                                    <label htmlFor="job-description">Job Description</label>
+                                    <textarea rows={5} name="job-description" placeholder="Enter job description" id="job-description" />
+                                </div>
+                                <div className="form-div">
+                                    <label htmlFor="uploader">Upload Resume</label>
+                                    <FileUploader onFileSelect={handleFileSelect} />
+                                </div>
+                                <button className="primary-button" type='submit'>
+                                    Analyze Resume
+                                </button>
+                            </form>
+                        )}
+                    </div>
+                </section>
+            </div>
         </main>
     )
 }
 
-export default upload;
+export default Upload;
