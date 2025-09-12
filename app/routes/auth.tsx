@@ -14,7 +14,6 @@ const auth = () => {
     const navigate = useNavigate();
 
     useEffect(() => {
-        // Only navigate if the user is authenticated and the next path exists.
             if (auth.isAuthenticated) navigate(next);
         }, [auth.isAuthenticated, next]);
 
