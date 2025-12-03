@@ -154,3 +154,10 @@ const Upload = () => {
 }
 
 export default Upload;
+
+// Provide a hydrate fallback while client-side modules initialize
+export const hydrateFallback = (
+    <main className="pt-16 p-4 container mx-auto">
+        <h2>Preparing upload…</h2>
+    </main>
+);

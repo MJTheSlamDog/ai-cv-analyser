@@ -13,6 +13,13 @@ export function meta({}: Route.MetaArgs) {
   ];
 }
 
+// Provide a hydrate fallback while client-side loaders or modules initialize
+export const hydrateFallback = (
+  <main className="pt-16 p-4 container mx-auto">
+    <h2>Loading…</h2>
+  </main>
+);
+
 export default function Home() {
   const { auth, kv } = usePuterStore();
   const navigate = useNavigate();
@@ -26,16 +33,17 @@ export default function Home() {
   useEffect(() => {
     const loadResumes = async () => {
       setLoadingResumes(true);
-
-      const resumes = (await kv.list('resume:*', true)) as KVItem[];
-
-      const parsedResumes = resumes?.map((resume) => (
-        JSON.parse(resume.value) as Resume
-      ));
-
-      console.log("parsedResumes", parsedResumes);
-      setResumes(parsedResumes || []);
-      setLoadingResumes(false);
+      try {
+        const resumes = (await kv.list("resume:*", true)) as KVItem[];
+        const parsedResumes = resumes?.map((resume) => JSON.parse(resume.value) as Resume);
+        console.log("parsedResumes", parsedResumes);
+        setResumes(parsedResumes || []);
+      } catch (err) {
+        console.warn("Failed to load resumes (probably unauthenticated or Puter unavailable)", err);
+        setResumes([]);
+      } finally {
+        setLoadingResumes(false);
+      }
     };
 
     loadResumes();

@@ -141,3 +141,10 @@ const Resume = () => {
 };
 
 export default Resume;
+
+// Provide a hydrate fallback while client-side modules initialize
+export const hydrateFallback = (
+    <main className="pt-16 p-4 container mx-auto">
+        <h2>Loading resume…</h2>
+    </main>
+);
