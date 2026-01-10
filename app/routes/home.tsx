@@ -8,7 +8,7 @@ import CyberpunkBg from '~/components/Cyberpunkbg';
 
 export function meta({}: Route.MetaArgs) {
   return [
-    { title: "Resumind" },
+    { title: "Re-Matcher" },
     { name: "description", content: "Smart Feedback for your dream job" },
   ];
 }
